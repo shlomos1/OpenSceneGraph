@@ -103,3 +103,5 @@ _CPack_Packages/
 #packages
 *.tar.gz
 *.zip
+
+.idea/

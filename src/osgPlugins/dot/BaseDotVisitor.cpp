@@ -152,6 +152,11 @@ void BaseDotVisitor::handleNodeAndTraverse(osg::Node& node, int id)
         }
         handle( node, *ss, id, id2 );
     }
+    else
+    {
+        handle(node, id);
+    }
+    
     traverse(node);
 }
 
