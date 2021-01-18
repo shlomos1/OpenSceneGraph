@@ -267,17 +267,17 @@ void SimpleDotVisitor::handle(osg::Group& node, int id)
 
 void SimpleDotVisitor::handle(osg::Node&, osg::StateSet&, int parentID, int childID )
 {
-    drawEdge( parentID, childID, "" );
+    drawEdge( parentID, childID, "solid", "mediumpurple2" );
 }
 
 void SimpleDotVisitor::handle(osg::Drawable&, osg::StateSet&, int parentID, int childID )
 {
-    drawEdge( parentID, childID, "" );
+    drawEdge( parentID, childID, "solid", "mediumpurple2" );
 }
 
 void SimpleDotVisitor::handle(osg::Group&, osg::Node&, int parentID, int childID )
 {
-    drawEdge( parentID, childID, "" );
+    drawEdge( parentID, childID, "dashed" );
 }
 
 void SimpleDotVisitor::drawNode( int id, const std::string& shape, const std::string& style, const std::string& label, const std::string& color, const std::string& fillColor )
@@ -292,12 +292,12 @@ void SimpleDotVisitor::drawNode( int id, const std::string& shape, const std::st
         "\"]" << std::endl;
 }
 
-void SimpleDotVisitor::drawEdge( int sourceId, int sinkId, const std::string& style )
+void SimpleDotVisitor::drawEdge( int sourceId, int sinkId, const std::string& style, const std::string& color)
 {   
     _edges
         << sourceId << ":top -> "
-        << sinkId   << ":top [style=\"" << "dashed" <<
-        "\" ,color=\"" << "grey40" <<
+        << sinkId   << ":top [style=\"" << style <<
+        "\" ,color=\"" << color <<
         "\" ,arrowsize=\"" << ".7" <<                
         "\"]" << std::endl;
 }
