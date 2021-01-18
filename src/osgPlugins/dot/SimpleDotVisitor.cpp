@@ -46,8 +46,21 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
             
             if (elements_num == 1)
             {
-                
-                if (statesetUniform->getType() == GL_BOOL)
+                if (statesetUniform->getType() == GL_INT)
+                {
+                    int int_val;
+                    res = statesetUniform->get(int_val);
+                    if (res)
+                    {
+                        label << statesetUniform->getName()                   // uniform name
+                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
+                            << " [" << uniform_type << "] "                 // uniform type                                
+                            << " = " << int_val                            // uniform value
+                            << " | ";
+                    }
+                }
+
+                else if (statesetUniform->getType() == GL_BOOL)
                 {
                     bool bool_val;
                     res = statesetUniform->get(bool_val);
@@ -59,7 +72,8 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                                 << " = " << bool_val                            // uniform value
                                 << " | ";
                     }
-                }               
+                }        
+
                 else if (statesetUniform->getType() == GL_FLOAT)
                 {
                     float float_val;
@@ -76,7 +90,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                
                 else if (statesetUniform->getType() == GL_DOUBLE)
                 {
-                    float double_val;
+                    double double_val;
                     res = statesetUniform->get(double_val);
                     if (res)
                     {
@@ -87,24 +101,10 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                             << " | ";
                     }
                 }
-
-                else if (statesetUniform->getType() == GL_INT)
-                {
-                    float int_val;
-                    res = statesetUniform->get(int_val);
-                    if (res)
-                    {
-                        label << statesetUniform->getName()                   // uniform name
-                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                            << " [" << uniform_type << "] "                 // uniform type                                
-                            << " = " << int_val                            // uniform value
-                            << " | ";
-                    }
-                }
-
+                
                 else if (statesetUniform->getType() == GL_UNSIGNED_INT)
                 {
-                    float uint_val;
+                    unsigned int uint_val;
                     res = statesetUniform->get(uint_val);
                     if (res)
                     {
@@ -114,8 +114,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                             << " = " << uint_val                            // uniform value
                             << " | ";
                     }
-                }
-                
+                }                
             }
             else
             {
@@ -139,7 +138,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
 
                     osg::DoubleArray* _doubleArray = statesetUniform->getDoubleArray();
                     for (int i = 0; i <= _doubleArray->getNumElements() - 1; i++)
-                        values += std::to_string((*_doubleArray)[i]) + ",";
+                        values += std::to_string((*_doubleArray)[i]) + ", ";
 
                     label << statesetUniform->getName()                             // uniform name
                         << " , id = " << statesetUniform->getNameID()               // uniform unique id
@@ -152,7 +151,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                 {
                     osg::IntArray* _intArray = statesetUniform->getIntArray();
                     for (int i = 0; i <= _intArray->getNumElements() - 1; i++)
-                        values += std::to_string((*_intArray)[i]) + ",";
+                        values += std::to_string((*_intArray)[i]) + ", ";
                     
 
                     for (osg::IntArray::iterator itr = _intArray->begin(); itr != _intArray->end(); ++itr)
@@ -169,7 +168,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     
                     osg::UIntArray* _uintArray = statesetUniform->getUIntArray();
                     for (int i = 0; i <= _uintArray->getNumElements() - 1; i++)
-                        values += std::to_string((*_uintArray)[i]) + ",";
+                        values += std::to_string((*_uintArray)[i]) + ", ";
 
                     for (osg::UIntArray::iterator itr = _uintArray->begin(); itr != _uintArray->end(); ++itr)
                         values += std::to_string(*itr);
@@ -185,7 +184,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                 {
                     osg::Int64Array* _int64Array = statesetUniform->getInt64Array();                    
                     for (int i = 0; i <= _int64Array->getNumElements() - 1; i++)
-                        values += std::to_string((*_int64Array)[i]) + ",";
+                        values += std::to_string((*_int64Array)[i]) + ", ";
 
                     for (osg::Int64Array::iterator itr = _int64Array->begin(); itr != _int64Array->end(); ++itr)
                         values += std::to_string(*itr);
@@ -202,7 +201,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                 {
                     osg::UInt64Array* _uint64Array = statesetUniform->getUInt64Array(); 
                     for (int i = 0; i <= _uint64Array->getNumElements() - 1; i++)
-                        values += std::to_string((*_uint64Array)[i]) + ",";
+                        values += std::to_string((*_uint64Array)[i]) + ", ";
                     
                     for (osg::UInt64Array::iterator itr = _uint64Array->begin(); itr != _uint64Array->end(); ++itr)
                         values += std::to_string(*itr);
@@ -217,7 +216,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
         }
     }
 
-    drawNode( id, "Mrecord", "solid, filled", label.str(), "orange", "black" );
+    drawNode( id, "Mrecord", "solid, filled", label.str(), "mediumpurple2", "gray15" );
 }
 
 void SimpleDotVisitor::handle(osg::Drawable& drawable, int id)
@@ -225,15 +224,18 @@ void SimpleDotVisitor::handle(osg::Drawable& drawable, int id)
     std::stringstream label;
     label << "<top> " << drawable.className();
     if ( !drawable.getName().empty() ) { label << " | " << drawable.getName(); }
-    drawNode( id, "record", "solid, filled", label.str(), "lightblue", "black" );
+    drawNode( id, "record", "solid, filled", label.str(), "cornflowerblue", "black" );
 }
 
 void SimpleDotVisitor::handle(osg::Node& node, int id)
 {
+    
     std::stringstream label;
+   
     label << "<top> "<<node.className();
     if ( !node.getName().empty() ) { label << " | " << node.getName(); }
-    drawNode( id, "record", "solid, filled", label.str(), "lightblue", "black" );
+    
+    drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
 }
 
 void SimpleDotVisitor::handle(osg::Group& node, int id)
@@ -241,7 +243,26 @@ void SimpleDotVisitor::handle(osg::Group& node, int id)
     std::stringstream label;
     label << "<top> " << node.className();
     if ( !node.getName().empty() ) { label << " | " << node.getName(); }
-    drawNode( id, "record", "solid, filled", label.str(), "lightblue", "black" );
+    
+    if (node.getName().find("root") != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
+    }    
+    else if (node.getName().find("position") != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "red1", "black");
+    }
+    else if (node.getName().find("prefab") != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
+    }
+    else if (node.getName().find("multi_spectral_filter_data_object") != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
+    }
+    else if (node.getName().find("cull_mask") != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
+    }
+    else
+    {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
+    }
 }
 
 void SimpleDotVisitor::handle(osg::Node&, osg::StateSet&, int parentID, int childID )
@@ -267,17 +288,18 @@ void SimpleDotVisitor::drawNode( int id, const std::string& shape, const std::st
         "\" ,style=\"" << style <<
         "\" ,color=\"" << color <<
         "\" ,fontname=\"" << "AvantGarde - Demi"  <<
-        "\" ,fillColor=\"" << fillColor <<
+        "\" ,fontcolor=\"" << fillColor <<
         "\"]" << std::endl;
 }
 
 void SimpleDotVisitor::drawEdge( int sourceId, int sinkId, const std::string& style )
-{
+{   
     _edges
         << sourceId << ":top -> "
-        << sinkId   << ":top [style=\""
-        << style    << "\"];"
-        << std::endl;
+        << sinkId   << ":top [style=\"" << "dashed" <<
+        "\" ,color=\"" << "grey40" <<
+        "\" ,arrowsize=\"" << ".7" <<                
+        "\"]" << std::endl;
 }
 
 } // namespace osgDot
