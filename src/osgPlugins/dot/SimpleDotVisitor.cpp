@@ -13,7 +13,10 @@
 
 #include "SimpleDotVisitor.h"
 
+
 namespace osgDot {
+
+    constexpr char PROBE_UNIFORM[] = "probe";
 
 SimpleDotVisitor::SimpleDotVisitor()
 {
@@ -52,26 +55,43 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     res = statesetUniform->get(int_val);
                     if (res)
                     {
-                        label << statesetUniform->getName()                   // uniform name
-                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                            << " [" << uniform_type << "] "                 // uniform type                                
-                            << " = " << int_val                            // uniform value
+                        label
+                            << "[#" << statesetUniform->getNameID() << "] "
+                            << " " << statesetUniform->getName() 
+                            << " (" << uniform_type << ") "
+                            << " = " << int_val
                             << " | ";
                     }
                 }
 
                 else if (statesetUniform->getType() == GL_BOOL)
                 {
+                   
+                  
+                    if (stateset.getUniformList().size() == 1 &&
+                        stateset.getUniformList().find(PROBE_UNIFORM) != stateset.getUniformList().end())
+                    {
+                        return;
+                    }
+
+                    if (statesetUniform->getName() == PROBE_UNIFORM)
+                    {
+                        continue;
+                    }
+
+
                     bool bool_val;
                     res = statesetUniform->get(bool_val);
                     if (res)
                     {
-                        label   << statesetUniform->getName()                   // uniform name
-                                << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                                << " [" << uniform_type << "] "                 // uniform type                                
-                                << " = " << bool_val                            // uniform value
-                                << " | ";
+                        label
+                            << "[#" << statesetUniform->getNameID() << "] "
+                            << " " << statesetUniform->getName()
+                            << " (" << uniform_type << ") "
+                            << " = " << bool_val
+                            << " | ";
                     }
+                    
                 }        
 
                 else if (statesetUniform->getType() == GL_FLOAT)
@@ -80,10 +100,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     res = statesetUniform->get(float_val);
                     if (res)
                     {
-                        label << statesetUniform->getName()                   // uniform name
-                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                            << " [" << uniform_type << "] "                 // uniform type                                
-                            << " = " << float_val                            // uniform value
+                        label
+                            << "[#" << statesetUniform->getNameID() << "] "
+                            << " " << statesetUniform->getName()
+                            << " (" << uniform_type << ") "
+                            << " = " << float_val
                             << " | ";
                     }
                 }
@@ -94,10 +115,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     res = statesetUniform->get(double_val);
                     if (res)
                     {
-                        label << statesetUniform->getName()                   // uniform name
-                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                            << " [" << uniform_type << "] "                 // uniform type                                
-                            << " = " << double_val                            // uniform value
+                        label
+                            << "[#" << statesetUniform->getNameID() << "] "
+                            << " " << statesetUniform->getName()
+                            << " (" << uniform_type << ") "
+                            << " = " << double_val
                             << " | ";
                     }
                 }
@@ -108,10 +130,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     res = statesetUniform->get(uint_val);
                     if (res)
                     {
-                        label << statesetUniform->getName()                   // uniform name
-                            << " , id = " << statesetUniform->getNameID()   // uniform unique id
-                            << " [" << uniform_type << "] "                 // uniform type                                
-                            << " = " << uint_val                            // uniform value
+                        label
+                            << "[#" << statesetUniform->getNameID() << "] "
+                            << " " << statesetUniform->getName()
+                            << " (" << uniform_type << ") "
+                            << " = " << uint_val
                             << " | ";
                     }
                 }                
@@ -127,11 +150,12 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (osg::FloatArray::iterator itr = _floatArray->begin(); itr != _floatArray->end(); ++itr)
                         values += std::to_string(*itr);
 
-                    label << statesetUniform->getName()                      // uniform name
-                        << " , id = " << statesetUniform->getNameID()      // uniform unique id
-                        << " [" << uniform_type  << "] "      // number of elements in unifom array                               
-                        << " = " << values                            // uniform value
-                        << " | ";                  
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
+                        << " | ";
                 }
                 else if (statesetUniform->getInternalArrayType(statesetUniform->getType()) == GL_DOUBLE)
                 {
@@ -140,10 +164,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (int i = 0; i <= _doubleArray->getNumElements() - 1; i++)
                         values += std::to_string((*_doubleArray)[i]) + ", ";
 
-                    label << statesetUniform->getName()                             // uniform name
-                        << " , id = " << statesetUniform->getNameID()               // uniform unique id
-                        << " [" << uniform_type << "] "      // number of elements in unifom array                               
-                        << " = " << values                                          // uniform value
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
                         << " | ";
                    
                 }
@@ -157,10 +182,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (osg::IntArray::iterator itr = _intArray->begin(); itr != _intArray->end(); ++itr)
                         values += std::to_string(*itr);
 
-                    label << statesetUniform->getName()                      // uniform name
-                        << " , id = " << statesetUniform->getNameID()      // uniform unique id
-                        << " [" << uniform_type << "] "      // number of elements in unifom array                               
-                        << " = " << values                            // uniform value
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
                         << " | ";
                 }
                 else if (statesetUniform->getInternalArrayType(statesetUniform->getType()) == GL_UNSIGNED_INT)
@@ -173,10 +199,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (osg::UIntArray::iterator itr = _uintArray->begin(); itr != _uintArray->end(); ++itr)
                         values += std::to_string(*itr);
 
-                    label << statesetUniform->getName()                      // uniform name
-                        << " , id = " << statesetUniform->getNameID()      // uniform unique id
-                        << " [" << uniform_type << "] "      // number of elements in unifom array                               
-                        << " = " << values                            // uniform value
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
                         << " | ";
                 }
 
@@ -189,10 +216,11 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (osg::Int64Array::iterator itr = _int64Array->begin(); itr != _int64Array->end(); ++itr)
                         values += std::to_string(*itr);
 
-                    label << statesetUniform->getName()                      // uniform name
-                        << " , id = " << statesetUniform->getNameID()      // uniform unique id
-                        << " [" << uniform_type << "] "      // number of elements in unifom array                               
-                        << " = " << values                            // uniform value
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
                         << " | ";
 
                 }
@@ -206,17 +234,18 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
                     for (osg::UInt64Array::iterator itr = _uint64Array->begin(); itr != _uint64Array->end(); ++itr)
                         values += std::to_string(*itr);
 
-                    label << statesetUniform->getName()                             // uniform name
-                        << " , id = " << statesetUniform->getNameID()               // uniform unique id
-                        << " [" << uniform_type << "] "      // number of elements in unifom array                               
-                        << " = " << values                                          // uniform value
+                    label
+                        << "[#" << statesetUniform->getNameID() << "] "
+                        << " " << statesetUniform->getName()
+                        << " (" << uniform_type << ") "
+                        << " = " << values
                         << " | ";
                 }
             }
         }
     }
 
-    drawNode( id, "Mrecord", "solid, filled", label.str(), "mediumpurple2", "gray15" );
+    drawNode( id, "record", "solid, filled", label.str(), "mediumpurple2", "gray15" );
 }
 
 void SimpleDotVisitor::handle(osg::Drawable& drawable, int id)
@@ -265,8 +294,15 @@ void SimpleDotVisitor::handle(osg::Group& node, int id)
     }
 }
 
-void SimpleDotVisitor::handle(osg::Node&, osg::StateSet&, int parentID, int childID )
+void SimpleDotVisitor::handle(osg::Node&, osg::StateSet& stateset, int parentID, int childID )
 {
+    if (stateset.getUniformList().size() == 1 &&
+        stateset.getUniformList().find(PROBE_UNIFORM) != stateset.getUniformList().end())
+    {
+        return;
+    }
+        
+
     drawEdge( parentID, childID, "solid", "mediumpurple2" );
 }
 
