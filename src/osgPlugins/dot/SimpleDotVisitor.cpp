@@ -16,8 +16,11 @@
 
 namespace osgDot {
 
-    constexpr char PROBE_UNIFORM[] = "probe";
-
+    constexpr const char PROBE_UNIFORM[] = "probe";
+    constexpr const char SPECTRAL_FILTER_TAG[] = "spectral_filter";
+    constexpr const char POSITION_NODE_TAG[] = "position_node";
+    constexpr const char ROOT_NODE_TAG[] = "root_node";
+	
 SimpleDotVisitor::SimpleDotVisitor()
 {
 }
@@ -273,19 +276,13 @@ void SimpleDotVisitor::handle(osg::Group& node, int id)
     label << "<top> " << node.className();
     if ( !node.getName().empty() ) { label << " | " << node.getName(); }
     
-    if (node.getName().find("root") != std::string::npos) {
+    if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
     }    
-    else if (node.getName().find("position") != std::string::npos) {
+    else if (node.getName().find(POSITION_NODE_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "red1", "black");
     }
-    else if (node.getName().find("prefab") != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
-    }
-    else if (node.getName().find("multi_spectral_filter_data_object") != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
-    }
-    else if (node.getName().find("cull_mask") != std::string::npos) {
+    else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
     }
     else
