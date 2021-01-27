@@ -44,7 +44,8 @@ class SimpleDotVisitor : public BaseDotVisitor
         virtual void drawNode( int id, const std::string& shape, const std::string& style, const std::string& label, const std::string& color, const std::string& fillColor );
 
         virtual void drawEdge( int sourceId, int sinkId, const std::string& style = "dashed", const std::string& color="gray40");
-
+        void setLableData(osg::Node& node, int id);
+        std::string convertIntToHex(unsigned int mask_value);
 };
 
 } // namespace osgDot

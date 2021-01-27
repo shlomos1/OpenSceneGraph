@@ -13,13 +13,21 @@
 
 #include "SimpleDotVisitor.h"
 
+#include <bitset>
+
 
 namespace osgDot {
 
     constexpr const char PROBE_UNIFORM[] = "probe";
     constexpr const char SPECTRAL_FILTER_TAG[] = "spectral_filter";
+    constexpr const char LOCAL_TAG[] = "local";
+    constexpr const char GROUP_TAG[] = "group";
     constexpr const char POSITION_NODE_TAG[] = "position_node";
     constexpr const char ROOT_NODE_TAG[] = "root_node";
+    constexpr const char CULL_MASK_TAG[] = "cull_mask";
+    constexpr const char CULL_MASK_ACTIVE_TAG[] = "cull_mask_active";
+    constexpr const char NODE_MASK_VALUE_TAG[] = "node_mask_value";
+    constexpr const char ROAD_BLOCK_NODE[] = "roadblock_node";
 	
 SimpleDotVisitor::SimpleDotVisitor()
 {
@@ -39,6 +47,7 @@ void SimpleDotVisitor::handle(osg::StateSet& stateset, int id)
     if (stateset.getUniformList().size() > 0)
     {
         label << " | " << stateset.getName() << " | ";
+        
         const osg::StateSet::UniformList& ul = stateset.getUniformList();
         for (osg::StateSet::UniformList::const_iterator itr = ul.begin();
             itr != ul.end();
@@ -261,34 +270,12 @@ void SimpleDotVisitor::handle(osg::Drawable& drawable, int id)
 
 void SimpleDotVisitor::handle(osg::Node& node, int id)
 {
-    
-    std::stringstream label;
-   
-    label << "<top> "<<node.className();
-    if ( !node.getName().empty() ) { label << " | " << node.getName(); }
-    
-    drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
+    setLableData(node, id);
 }
 
 void SimpleDotVisitor::handle(osg::Group& node, int id)
 {
-    std::stringstream label;
-    label << "<top> " << node.className();
-    if ( !node.getName().empty() ) { label << " | " << node.getName(); }
-    
-    if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
-    }    
-    else if (node.getName().find(POSITION_NODE_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "red1", "black");
-    }
-    else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen3", "black");
-    }
-    else
-    {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
-    }
+    setLableData(node, id);
 }
 
 void SimpleDotVisitor::handle(osg::Node&, osg::StateSet& stateset, int parentID, int childID )
@@ -308,9 +295,10 @@ void SimpleDotVisitor::handle(osg::Drawable&, osg::StateSet&, int parentID, int 
     drawEdge( parentID, childID, "solid", "mediumpurple2" );
 }
 
-void SimpleDotVisitor::handle(osg::Group&, osg::Node&, int parentID, int childID )
+void SimpleDotVisitor::handle(osg::Group& parent, osg::Node&, int parentID, int childID )
 {
-    drawEdge( parentID, childID, "dashed" );
+    drawEdge(parentID, childID, "dashed");
+   
 }
 
 void SimpleDotVisitor::drawNode( int id, const std::string& shape, const std::string& style, const std::string& label, const std::string& color, const std::string& fillColor )
@@ -335,4 +323,41 @@ void SimpleDotVisitor::drawEdge( int sourceId, int sinkId, const std::string& st
         "\"]" << std::endl;
 }
 
+
+void SimpleDotVisitor::setLableData(osg::Node& node, int id)
+{
+    std::stringstream label;
+	
+    label << "<top> " << node.getName();
+    label << " | " << NODE_MASK_VALUE_TAG << ": " << convertIntToHex(node.getNodeMask()) << " | ";
+
+    if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
+    }
+    else if (node.getName().find(POSITION_NODE_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "indianred1", "black");
+    }
+    else if (node.getName().find(GROUP_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "lightseagreen", "black");
+    }
+    else if (node.getName().find(LOCAL_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkslategray3", "black");
+    }
+    else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "goldenrod1", "black");
+    }
+    else {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
+    }
+}
+	
+std::string SimpleDotVisitor::convertIntToHex(unsigned int mask_value)
+{
+    auto binary = std::bitset<8>(mask_value).to_string();
+
+    std::string mask_string_hex_value = "0x" + binary + " (" + std::to_string(mask_value) + ")";
+    return  mask_string_hex_value;
+}
+	
 } // namespace osgDot
+
