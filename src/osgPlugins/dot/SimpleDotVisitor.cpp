@@ -27,7 +27,7 @@ namespace osgDot {
     constexpr const char CULL_MASK_TAG[] = "cull_mask";
     constexpr const char CULL_MASK_ACTIVE_TAG[] = "cull_mask_active";
     constexpr const char NODE_MASK_VALUE_TAG[] = "node_mask_value";
-    constexpr const char ROAD_BLOCK_NODE[] = "roadblock_node";
+    constexpr const char PREFAB_TAG[] = "prefab";
 	
 SimpleDotVisitor::SimpleDotVisitor()
 {
@@ -336,15 +336,18 @@ void SimpleDotVisitor::setLableData(osg::Node& node, int id)
     }
     else if (node.getName().find(POSITION_NODE_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "indianred1", "black");
+    }   
+    else if (node.getName().find(PREFAB_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "sandybrown", "black");
+    }
+    else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "goldenrod1", "black");
     }
     else if (node.getName().find(GROUP_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "lightseagreen", "black");
     }
     else if (node.getName().find(LOCAL_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "darkslategray3", "black");
-    }
-    else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "goldenrod1", "black");
     }
     else {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
