@@ -20,11 +20,13 @@ namespace osgDot {
 
     constexpr const char PROBE_UNIFORM[] = "probe";
     constexpr const char SPECTRAL_FILTER_TAG[] = "spectral_filter";
-    constexpr const char LOCAL_TAG[] = "local";
+    constexpr const char SHADER_TAG[] = "shader";
+    constexpr const char MATERIAL_TAG[] = "material";
     constexpr const char GROUP_TAG[] = "group";
     constexpr const char POSITION_NODE_TAG[] = "position_node";
     constexpr const char ROOT_NODE_TAG[] = "root_node";
     constexpr const char CULL_MASK_TAG[] = "cull_mask";
+    constexpr const char DATA_OBJ_TAG[] = "data_object";
     constexpr const char CULL_MASK_ACTIVE_TAG[] = "cull_mask_active";
     constexpr const char NODE_MASK_VALUE_TAG[] = "node_mask_value";
     constexpr const char PREFAB_TAG[] = "prefab";
@@ -331,8 +333,14 @@ void SimpleDotVisitor::setLableData(osg::Node& node, int id)
     label << "<top> " << node.getName();
     label << " | " << NODE_MASK_VALUE_TAG << ": " << convertIntToHex(node.getNodeMask()) << " | ";
 
-    if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
+	if (node.getName().find(SHADER_TAG) != std::string::npos) {
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightsteelblue2", "black");
+	}
+	else if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
+	}
+    else if (node.getName().find(MATERIAL_TAG) != std::string::npos) {
+        drawNode(id, "Mrecord", "solid, filled", label.str(), "orange", "black");
     }
     else if (node.getName().find(POSITION_NODE_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "indianred1", "black");
@@ -342,13 +350,16 @@ void SimpleDotVisitor::setLableData(osg::Node& node, int id)
     }
     else if (node.getName().find(SPECTRAL_FILTER_TAG) != std::string::npos) {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "goldenrod1", "black");
-    }
-    else if (node.getName().find(GROUP_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "lightseagreen", "black");
-    }
-    else if (node.getName().find(LOCAL_TAG) != std::string::npos) {
-        drawNode(id, "Mrecord", "solid, filled", label.str(), "darkslategray3", "black");
-    }
+    }        	
+	else if (node.getName().find(GROUP_TAG) != std::string::npos) {
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightseagreen", "black");
+	}
+	else if (node.getName().find(CULL_MASK_TAG) != std::string::npos) {
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightsalmon", "black");
+	}
+	else if (node.getName().find(DATA_OBJ_TAG) != std::string::npos) {
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "indianred", "black");
+	}	
     else {
         drawNode(id, "Mrecord", "solid, filled", label.str(), "cornflowerblue", "black");
     }
