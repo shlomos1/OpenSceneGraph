@@ -334,7 +334,7 @@ void SimpleDotVisitor::setLableData(osg::Node& node, int id)
     label << " | " << NODE_MASK_VALUE_TAG << ": " << convertIntToHex(node.getNodeMask()) << " | ";
 
 	if (node.getName().find(SHADER_TAG) != std::string::npos) {
-		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightsteelblue2", "black");
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "darkseagreen", "black");
 	}
 	else if (node.getName().find(ROOT_NODE_TAG) != std::string::npos) {
 		drawNode(id, "Mrecord", "solid, filled", label.str(), "coral", "black");
@@ -355,7 +355,7 @@ void SimpleDotVisitor::setLableData(osg::Node& node, int id)
 		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightseagreen", "black");
 	}
 	else if (node.getName().find(CULL_MASK_TAG) != std::string::npos) {
-		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightsalmon", "black");
+		drawNode(id, "Mrecord", "solid, filled", label.str(), "lightgoldenrod1", "black");
 	}
 	else if (node.getName().find(DATA_OBJ_TAG) != std::string::npos) {
 		drawNode(id, "Mrecord", "solid, filled", label.str(), "indianred", "black");
