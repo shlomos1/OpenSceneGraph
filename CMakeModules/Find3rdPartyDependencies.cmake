@@ -77,6 +77,7 @@ MACRO(SEARCH_3RDPARTY OSG_3RDPARTY_BIN)
         FIND_DEPENDENCY(JPEG jpeglib.h "libjpeg;jpeg" ${OSG_3RDPARTY_BIN} "D" "")
         FIND_DEPENDENCY(GDAL gdal.h "gdal;gdal16" ${OSG_3RDPARTY_BIN} "d" "_i")
         FIND_DEPENDENCY(GLUT GL/glut.h glut32 ${OSG_3RDPARTY_BIN} "D" "")
+        FIND_DEPENDENCY(GLEW GL/glew.h "libglew;libGLEW;libglew32;libGLEW32;glew;GLEW" ${OSG_3RDPARTY_BIN} "d" "")
         IF(GLUT_FOUND)
             #forcing subsequent FindGlut stuff to not search for other variables.... kind of a hack
             SET(GLUT_glut_LIBRARY ${GLUT_LIBRARY} CACHE FILEPATH "")
