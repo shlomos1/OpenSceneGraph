@@ -16,7 +16,7 @@ IF(APPLE)
     SET(FBX_LIBDIR "gcc4/ub")
   endif()
 ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-    SET(FBX_LIBDIR "gcc4")
+    SET(FBX_LIBDIR "gcc")
 ELSEIF(MSVC80)
     SET(FBX_LIBDIR "vs2005")
 ELSEIF(MSVC90)
@@ -137,17 +137,14 @@ FIND_PATH(FBX_INCLUDE_DIR "fbxsdk.h"
     PATH_SUFFIXES "include")
 FIND_LIBRARY( FBX_LIBRARY ${FBX_LIBNAME}
     PATHS ${FBX_SEARCH_PATHS}
-    PATH_SUFFIXES "lib/${FBX_LIBDIR}/release" "lib/${FBX_LIBDIR}")
+    PATH_SUFFIXES "lib/${FBX_LIBDIR}/release" "lib/${FBX_LIBDIR}" "lib/${FBX_LIBDIR}/x64/release" "lib/x64/${FBX_LIBDIR}")
 
 #Once one of the calls succeeds the result variable will be set and stored in the cache so that no call will search again.
 
 #no debug d suffix, search in debug folder only
 FIND_LIBRARY( FBX_LIBRARY_DEBUG ${FBX_LIBNAME}
     PATHS ${FBX_SEARCH_PATHS}
-    PATH_SUFFIXES "lib/${FBX_LIBDIR}/debug")
-FIND_LIBRARY( FBX_LIBRARY_DEBUG ${FBX_LIBNAME_DEBUG}
-    PATHS ${FBX_SEARCH_PATHS}
-    PATH_SUFFIXES "lib/${FBX_LIBDIR}")
+    PATH_SUFFIXES "lib/${FBX_LIBDIR}/debug" "lib/${FBX_LIBDIR}" "lib/${FBX_LIBDIR}/x64/debug" "lib/x64/${FBX_LIBDIR}")
 
 IF(WIN32)
     FIND_LIBRARY( FBX_XML2_L    SET(FBX_LIBDIR "vs2010")
