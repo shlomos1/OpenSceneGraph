@@ -32,8 +32,7 @@ ELSEIF(MSVC_VERSION EQUAL 1900)
 ELSEIF(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
     SET(FBX_LIBDIR "vs2017")
 ELSEIF(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
-#   SET(FBX_LIBDIR "vs2019") # FBX doesn't have this yet as of version 2020.0.1
-    SET(FBX_LIBDIR "vs2017") # Binary compatible with vs2019
+   SET(FBX_LIBDIR "vs2019")
 ENDIF()
 
 IF(APPLE)
@@ -69,6 +68,24 @@ SET(FBX_LIBNAME_DEBUG ${FBX_LIBNAME}d)
 
 SET( FBX_SEARCH_PATHS
     $ENV{FBX_DIR}
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.3.1"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.3.1"
+    "/Applications/Autodesk/FBX SDK/2020.3.1"
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.3"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.3"
+    "/Applications/Autodesk/FBX SDK/2020.3"
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.2.1"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.2.1"
+    "/Applications/Autodesk/FBX SDK/2020.2.1"
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.2"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.2"
+    "/Applications/Autodesk/FBX SDK/2020.2"
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.1.1"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.1.1"
+    "/Applications/Autodesk/FBX SDK/2020.1.1"
+    "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.1"
+    "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.1"
+    "/Applications/Autodesk/FBX SDK/2020.1"
     "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2020.0.1"
     "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2020.0.1"
     "/Applications/Autodesk/FBX SDK/2020.0.1"
@@ -99,19 +116,19 @@ SET( FBX_SEARCH_PATHS
     "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2016.1.2"
     "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2016.1.2"
     "/Applications/Autodesk/FBX/FBX SDK/2016.1.2"
-    /Applications/Autodesk/FBXSDK201612
+    "/Applications/Autodesk/FBXSDK201612"
     "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2016.1.1"
     "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2016.1.1"
     "/Applications/Autodesk/FBX/FBX SDK/2016.1.1"
-    /Applications/Autodesk/FBXSDK201611
+    "/Applications/Autodesk/FBXSDK201611"
     "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2015.1"
     "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2015.1"
     "/Applications/Autodesk/FBX/FBX SDK/2015.1"
-    /Applications/Autodesk/FBXSDK20151
+    "/Applications/Autodesk/FBXSDK20151"
     "$ENV{ProgramW6432}/Autodesk/FBX/FBX SDK/2014.2"
     "$ENV{PROGRAMFILES}/Autodesk/FBX/FBX SDK/2014.2"
     "/Applications/Autodesk/FBX/FBX SDK/2014.2"
-    /Applications/Autodesk/FBXSDK20142
+    "/Applications/Autodesk/FBXSDK20142"
 )
 
 # search for headers & debug/release libraries
@@ -133,7 +150,8 @@ FIND_LIBRARY( FBX_LIBRARY_DEBUG ${FBX_LIBNAME_DEBUG}
     PATH_SUFFIXES "lib/${FBX_LIBDIR}")
 
 IF(WIN32)
-    FIND_LIBRARY( FBX_XML2_LIBRARY ${FBX_XML2_LIBNAME}
+    FIND_LIBRARY( FBX_XML2_L    SET(FBX_LIBDIR "vs2010")
+    IBRARY ${FBX_XML2_LIBNAME}
         PATHS ${FBX_SEARCH_PATHS}
         PATH_SUFFIXES "lib/${FBX_LIBDIR}/release" "lib/${FBX_LIBDIR}")
     FIND_LIBRARY( FBX_ZLIB_LIBRARY ${FBX_ZLIB_LIBNAME}
