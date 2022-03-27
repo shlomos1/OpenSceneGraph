@@ -19,6 +19,10 @@
  *         Holger Helmich 2010-10-21
 */
 
+#if GLEW_FOUND
+    #include "GL/glew.h"
+#endif
+
 #include <fstream>
 #include <list>
 #include <sstream>
@@ -578,6 +582,17 @@ namespace
     }
 }
 
+bool static loadBinaryShader(const unsigned char* bin, size_t size, GLuint binaryFormat, GLuint& shader, osg::ref_ptr<osg::GLExtensions> _extensions)
+{
+    GLint compiled = GL_FALSE;
+    
+	_extensions->glShaderBinary(1, &shader, binaryFormat, bin, size);
+	_extensions->glSpecializeShaderARB(shader, "main", 0, 0, 0);
+	_extensions->glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+
+    return compiled == GL_TRUE;
+}
+
 void Shader::PerContextShader::compileShader(osg::State& state)
 {
     if( ! _needsCompile ) return;
@@ -631,23 +646,33 @@ void Shader::PerContextShader::compileShader(osg::State& state)
             }
         }
     }
-#endif
-
-    std::string source = _shader->getShaderSource();
-    // if (_shader->getType()==osg::Shader::VERTEX && (state.getUseVertexAttributeAliasing() || state.getUseModelViewAndProjectionUniforms()))
-    {
-        state.convertVertexShaderSourceToOsgBuiltIns(source);
-    }
-
+#else
 
     GLint compiled = GL_FALSE;
+    bool use_binary_shader = false;
 
-    // OSG_NOTICE<<"Compiling PerContextShader "<<this<<" DefineString="<<getDefineString()<<std::endl;
+#if GLEW_FOUND
 
-    if (_defineStr.empty())
+	use_binary_shader = _shader->getShaderBinary();
+	if (use_binary_shader)
+	{
+		compiled = loadBinaryShader(
+			_shader->getShaderBinary()->getData(),
+			_shader->getShaderBinary()->getSize(),
+			GL_SHADER_BINARY_FORMAT_SPIR_V_ARB,
+			_glShaderHandle,
+			_extensions);
+
+	}
+#endif
+
+    if (!use_binary_shader)
     {
-        const GLchar* sourceText = reinterpret_cast<const GLchar*>(source.c_str());
-        _extensions->glShaderSource( _glShaderHandle, 1, &sourceText, NULL );
+        std::string source = _shader->getShaderSource();
+        // if (_shader->getType()==osg::Shader::VERTEX && (state.getUseVertexAttributeAliasing() || state.getUseModelViewAndProjectionUniforms()))
+        {
+            state.convertVertexShaderSourceToOsgBuiltIns(source);
+        }
 
         if (osg::getNotifyLevel()>=osg::INFO)
         {
@@ -655,83 +680,16 @@ void Shader::PerContextShader::compileShader(osg::State& state)
             OSG_INFO << "\nCompiling A :" << _shader->getTypename()
                     << " source:\n" << sourceWithLineNumbers << std::endl;
         }
+       
+        const GLchar* sourceText = reinterpret_cast<const GLchar*>(source.c_str());
+        _extensions->glShaderSource( _glShaderHandle, 1, &sourceText, NULL );
+        _extensions->glCompileShader( _glShaderHandle );
+        _extensions->glGetShaderiv( _glShaderHandle, GL_COMPILE_STATUS, &compiled );
+
     }
-    else
-    {
-        // Convert all windows line endings to \n
-        replaceAll(source, "\r\n", " \n");
+#endif
 
-        std::string versionLine;
-        unsigned int lineNum = 0;
-        std::string::size_type previous_pos = 0;
-        do
-        {
-            std::string::size_type start_of_line = find_first(source, NoneOf(" \t"), previous_pos);
-            std::string::size_type end_of_line = (start_of_line != std::string::npos) ? find_first(source, OneOf("\n\r"), start_of_line) : std::string::npos;
-            if (end_of_line != std::string::npos)
-            {
-                // OSG_NOTICE<<"A Checking line "<<lineNum<<" ["<<source.substr(start_of_line, end_of_line-start_of_line)<<"]"<<std::endl;
-                if ((end_of_line-start_of_line)>=8 && source.compare(start_of_line, 8, "#version")==0)
-                {
-                    versionLine = source.substr(start_of_line, end_of_line-start_of_line+1);
-                    if (versionLine[versionLine.size()-1]!='\n') versionLine.push_back('\n');
-
-                    source.insert(start_of_line, "// following version spec has been automatically reassigned to start of source list: ");
-
-                    break;
-                }
-                previous_pos = end_of_line+1<source.size() ? end_of_line+1 : std::string::npos;
-            }
-            else
-            {
-                // OSG_NOTICE<<"B Checking line "<<lineNum<<" ["<<source.substr(start_of_line, end_of_line-start_of_line)<<"]"<<std::endl;
-                previous_pos = std::string::npos;
-            }
-            ++lineNum;
-
-        } while (previous_pos != std::string::npos);
-
-        if (!versionLine.empty())
-        {
-            const GLchar* sourceText[3];
-            sourceText[0] = reinterpret_cast<const GLchar*>(versionLine.c_str());
-            sourceText[1] = reinterpret_cast<const GLchar*>(_defineStr.c_str());
-            sourceText[2] = reinterpret_cast<const GLchar*>(source.c_str());
-            _extensions->glShaderSource( _glShaderHandle, 3, sourceText, NULL );
-
-            if (osg::getNotifyLevel()>=osg::INFO)
-            {
-                std::string sourceWithLineNumbers = insertLineNumbers(versionLine+_defineStr+source);
-                OSG_INFO << "\nCompiling B: " << _shader->getTypename()
-                        << " source:\n" << sourceWithLineNumbers << std::endl;
-            }
-
-            // OSG_NOTICE<<"   Version Line : ["<<std::endl<<versionLine<<"]"<<std::endl;
-            // OSG_NOTICE<<"   DefineStr : ["<<std::endl<<_defineStr<<"]"<<std::endl;
-            // OSG_NOTICE<<"   Source : ["<<std::endl<<source<<"]"<<std::endl;
-        }
-        else
-        {
-            const GLchar* sourceText[2];
-            sourceText[0] = reinterpret_cast<const GLchar*>(_defineStr.c_str());
-            sourceText[1] = reinterpret_cast<const GLchar*>(source.c_str());
-            _extensions->glShaderSource( _glShaderHandle, 2, sourceText, NULL );
-
-
-            if (osg::getNotifyLevel()>=osg::INFO)
-            {
-                std::string sourceWithLineNumbers = insertLineNumbers(_defineStr+source);
-                OSG_INFO << "\nCompiling C: " << _shader->getTypename()
-                        << " source:\n" << sourceWithLineNumbers << std::endl;
-            }
-
-            // OSG_NOTICE<<"   DefineStr : ["<<std::endl<<_defineStr<<"]"<<std::endl;
-            // OSG_NOTICE<<"   Source : ["<<std::endl<<source<<"]"<<std::endl;
-        }
-    }
-    _extensions->glCompileShader( _glShaderHandle );
-    _extensions->glGetShaderiv( _glShaderHandle, GL_COMPILE_STATUS, &compiled );
-
+    
     _isCompiled = (compiled == GL_TRUE);
     if( ! _isCompiled )
     {
