@@ -723,7 +723,7 @@ OPTION(BUILD_OSG_PLUGINS "Build OSG Plugins - Disable for compile testing exampl
 mark_as_advanced(BUILD_OSG_PLUGINS)
 ################################################################################
 # 3rd Party Dependency Stuff
-IF(WIN32 AND NOT ANDROID)
+IF(NOT ANDROID)
     INCLUDE(Find3rdPartyDependencies)
 ENDIF()
 
