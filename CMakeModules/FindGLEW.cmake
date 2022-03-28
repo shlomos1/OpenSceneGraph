@@ -48,4 +48,5 @@ set(GLEW_FOUND "NO")
 if(GLEW_LIBRARY AND GLEW_INCLUDE_DIR)
   set(GLEW_FOUND "YES")
   add_compile_definitions(GLEW_FOUND=1)
+  add_compile_definitions(GLEW_NO_GLU=1) # we don't really need GLU
 endif(GLEW_LIBRARY AND GLEW_INCLUDE_DIR)
