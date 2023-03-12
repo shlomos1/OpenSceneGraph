@@ -6,6 +6,13 @@ SET(OPENSCENEGRAPH_MINOR_VERSION 6)
 SET(OPENSCENEGRAPH_PATCH_VERSION 5)
 SET(OPENSCENEGRAPH_SOVERSION 161)
 
+# option to add rpath
+option(OPENSCENEGRAPH_FORCE_ADD_RPATH "adds an rpath by force" ON)
+if(OPENSCENEGRAPH_FORCE_ADD_RPATH)
+    if(UNIX AND NOT APPLE)
+        set(CMAKE_INSTALL_RPATH "$LIBLOC" "$ORIGIN" "$ORIGIN/lib")
+    endif()
+endif()
 
 # set to 0 when not a release candidate, non zero means that any generated
 # git tags will be treated as release candidates of given number
